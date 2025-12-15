@@ -1,0 +1,7 @@
+cargo:rerun-if-changed=build.rs
+cargo:warning=Using ONNX Runtime SDK from: /home/jbang/codebase/zipenhancer-rs/lib/onnxruntime-linux-x64-1.23.0
+cargo:include=/home/jbang/codebase/zipenhancer-rs/lib/onnxruntime-linux-x64-1.23.0/include
+cargo:rustc-link-search=native=/home/jbang/codebase/zipenhancer-rs/lib/onnxruntime-linux-x64-1.23.0/lib
+cargo:rustc-link-lib=dylib=onnxruntime
+cargo:warning=Include directory: /home/jbang/codebase/zipenhancer-rs/lib/onnxruntime-linux-x64-1.23.0/include
+cargo:warning=Lib directory: /home/jbang/codebase/zipenhancer-rs/lib/onnxruntime-linux-x64-1.23.0/lib

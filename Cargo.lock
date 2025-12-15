@@ -2446,6 +2446,7 @@ dependencies = [
  "onnxruntime",
  "predicates",
  "rand",
+ "rayon",
  "serde",
  "tempfile",
  "thiserror",

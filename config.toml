@@ -1,6 +1,10 @@
 # ZipEnhancer Rust version configuration file
 # This configuration file contains all parameter settings for the audio noise reduction processor
 
+# Input/Output paths (can be overridden by command line)
+input_path = "./audio_samples/noise1.wav"
+output_path = "./output.wav"
+
 [model]
 # ONNX model file path
 path = "./model/ZipEnhancer_ONNX/ZipEnhancer.onnx"

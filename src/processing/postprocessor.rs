@@ -580,12 +580,11 @@ impl AudioPostprocessor {
     /// Create WavAudio file
     pub fn create_wav_audio(&self, data: Array1<f32>) -> Result<WavAudio> {
         let total_samples = data.len() as u32;
-        let _duration = total_samples as f64 / self.config.output_sample_rate as f64;
 
         let header = crate::audio::AudioHeader::new(
             self.config.output_sample_rate,
-            1,
-            self.config.output_format,
+            1,  // mono
+            self.config.output_format,  // Int16 (在 processor.rs 中配置)
             total_samples,
         );
 

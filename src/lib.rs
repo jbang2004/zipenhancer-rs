@@ -8,7 +8,6 @@ pub mod config;
 pub mod error;
 pub mod onnx;
 pub mod processing;
-pub mod utils;
 pub mod simple_processor;
 
 // Re-export main public interfaces
