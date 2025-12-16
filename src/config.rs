@@ -129,7 +129,7 @@ impl Config {
         }
     }
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Clone, Parser)]
 #[command(name = "zipenhancer", about = "Audio Denoise Processor", version, author)]
 pub struct Args {
     #[arg(short = 'm', long = "model", default_value = "./model/ZipEnhancer_ONNX/ZipEnhancer.onnx", help = "ONNX model file path")]
@@ -170,6 +170,12 @@ pub struct Args {
 
     #[arg(long = "onnx-lib", help = "ONNX Runtime library file path")]
     pub onnx_lib: Option<PathBuf>,
+
+    #[arg(long = "parallel-workers", help = "Number of parallel ONNX sessions (default: 4)")]
+    pub parallel_workers: Option<usize>,
+
+    #[arg(long = "serial", help = "Use serial processing (single session, multi-thread)")]
+    pub serial: bool,
 }
 
 impl Config {
@@ -299,11 +305,11 @@ mod tests {
     #[test]
     fn test_default_config() {
         let config = Config::default();
-        assert_eq!(config.sample_rate, 16000);
-        assert_eq!(config.overlap_ratio, 0.1);
-        assert_eq!(config.segment_size, 16000);
-        assert_eq!(config.max_retries, 3);
-        assert_eq!(config.inference_threads, 4); 
+        assert_eq!(config.sample_rate(), 16000);
+        assert_eq!(config.overlap_ratio(), 0.1);
+        assert_eq!(config.segment_size(), 16000);
+        assert_eq!(config.max_retries(), 3);
+        assert_eq!(config.inference_threads(), 4); 
     }
 
     #[test]
@@ -312,15 +318,15 @@ mod tests {
 
         assert!(config.validate().is_ok());
 
-        config.sample_rate = 0;
+        config.audio.sample_rate = 0;
         assert!(config.validate().is_err());
-        config.sample_rate = 16000;
+        config.audio.sample_rate = 16000;
 
-        config.overlap_ratio = 1.0;
+        config.audio.overlap_ratio = 1.0;
         assert!(config.validate().is_err());
-        config.overlap_ratio = 0.1;
+        config.audio.overlap_ratio = 0.1;
 
-        config.segment_size = 0;
+        config.audio.segment_size = 0;
         assert!(config.validate().is_err());
     }
 
@@ -335,8 +341,8 @@ mod tests {
         assert!(config_path.exists());
 
         let loaded_config = Config::from_file(&config_path).unwrap();
-        assert_eq!(config.sample_rate, loaded_config.sample_rate);
-        assert_eq!(config.overlap_ratio, loaded_config.overlap_ratio);
+        assert_eq!(config.sample_rate(), loaded_config.sample_rate());
+        assert_eq!(config.overlap_ratio(), loaded_config.overlap_ratio());
     }
 
     #[test]
@@ -352,10 +358,7 @@ mod tests {
 
     #[test]
     fn test_overlap_calculations() {
-        let config = Config {
-            ..Default::default()
-        };
-
+        let config = Config::default();
         assert_eq!(config.overlap_samples(), 1600);
         assert_eq!(config.hop_size(), 14400);
     }

@@ -82,21 +82,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 # Build the project
 cargo build --release
 
-# Use wrapper script (recommended, automatically handles ONNX Runtime library)
-./zipenhancer.sh --help
-./zipenhancer.sh --test-only --input dummy.wav
+# Basic noise reduction (uses 4 parallel workers by default)
+./target/release/zipenhancer -i noisy.wav -o clean.wav
 
-# Basic noise reduction
-./zipenhancer.sh -i noisy.wav -o clean.wav
+# Specify number of parallel workers
+./target/release/zipenhancer -i noisy.wav -o clean.wav --parallel-workers 4
 
-# Advanced options
-./zipenhancer.sh \
-  --input noisy.wav \
-  --output clean.wav \
-  --model model.onnx \
-  --sample-rate 16000 \
-  --overlap 0.1 \
-  --verbose
+# With verbose output
+./target/release/zipenhancer -i noisy.wav -o clean.wav -v
 
 # Specify ONNX Runtime library path
 ./zipenhancer.sh \
@@ -134,6 +127,7 @@ For detailed setup guide, please refer to: [README_ONNX_SETUP.md](docs/README_ON
 | `--overlap` | `-l` | Segment overlap ratio (0.0 - 1.0) | `0.1` |
 | `--segment-size` | `-s` | Audio segment size (samples) | `16000` |
 | `--onnx-lib` | - | ONNX Runtime library file path | Auto-detect |
+| `--parallel-workers` | - | Number of parallel ONNX sessions | `4` |
 | `--verbose` | `-v` | Enable verbose output mode | `false` |
 | `--test-only` | - | Test mode only | `false` |
 | `--inference-threads` | - | ONNX inference thread count | `4` |
@@ -143,19 +137,17 @@ For detailed setup guide, please refer to: [README_ONNX_SETUP.md](docs/README_ON
 ### Layered Architecture Design
 ```txt
 ┌─────────────────────────────────────┐
-│         Application Layer           │  main.rs, simple_processor.rs
+│         Application Layer           │  main.rs
 ├─────────────────────────────────────┤
-│         Processing Coordination     │  processing/processor.rs
+│         Processing Pipeline         │  processor.rs, parallel_processor.rs
 ├─────────────────────────────────────┤
-│         Inference Execution         │  onnx/inference.rs, onnx/session.rs
+│         ONNX Inference              │  inference.rs, session.rs
 ├─────────────────────────────────────┤
-│         Preprocessing Layer         │  processing/preprocessor.rs
+│         Audio Preprocessing         │  preprocessor.rs, postprocessor.rs
 ├─────────────────────────────────────┤
-│         Data Transform Layer        │  audio/converter.rs
+│         Audio I/O                   │  wav.rs, converter.rs
 ├─────────────────────────────────────┤
-│         Core Audio Layer            │  audio/wav.rs
-├─────────────────────────────────────┤
-│         Utilities Layer             │  config.rs, error.rs
+│         Core Utilities              │  config.rs, error.rs
 └─────────────────────────────────────┘
 ```
 

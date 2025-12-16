@@ -1,1 +1,0 @@
-{"rustc":11410426090777951712,"features":"[]","declared_features":"[]","target":2998606345829117793,"profile":16503403049695105087,"path":16404437066582601852,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release/.fingerprint/rawpointer-b4684cd70496df2a/dep-lib-rawpointer","checksum":false}}],"rustflags":["-W","unused"],"config":2069994364910194474,"compile_kind":0}
